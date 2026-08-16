@@ -10,7 +10,7 @@ Download and extract the repository, then double-click `run-windows.bat`. It ins
 
 - Backend: C#, ASP.NET Core 8 Minimal API
 - Frontend: React, JavaScript, Vite
-- Storage: server-side JSON file in `backend/App_Data`
+- Database: Microsoft SQL Server / SQL Server LocalDB
 - No TypeScript
 
 ## Run the backend
@@ -36,9 +36,13 @@ npm run dev
 
 Open `http://localhost:5173`.
 
+## Database
+
+The backend uses SQL Server LocalDB and automatically creates the `TeamTaskManager` database and `dbo.Tasks` table when it starts. The complete SQL setup script is available at `database/schema.sql` for running manually in SQL Server Management Studio.
+
 ## Features
 
-- Sign in with a display name
+- Secure username and password registration and login
 - Add shared tasks with descriptions and due dates
 - Claim a task so the start button is unavailable to everyone else
 - Only the user working on a task can complete it
