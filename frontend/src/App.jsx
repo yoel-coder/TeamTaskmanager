@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 
 const api = async (path, options) => {
-  const response = await fetch(`/api${path}`, { headers: { 'Content-Type': 'application/json' }, ...options })
+  const token = localStorage.getItem('task-token')
+  const response = await fetch(`/api${path}`, { headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, ...options })
   if (!response.ok) throw new Error((await response.json().catch(() => ({}))).message || 'Something went wrong.')
   return response.json()
 }
@@ -11,6 +12,8 @@ const formatDate = value => value ? new Date(value).toLocaleDateString(undefined
 function App() {
   const [userName, setUserName] = useState(localStorage.getItem('task-user') || '')
   const [loginName, setLoginName] = useState('')
+  const [password, setPassword] = useState('')
+  const [registering, setRegistering] = useState(false)
   const [tasks, setTasks] = useState([])
   const [form, setForm] = useState({ title: '', description: '', dueDate: '' })
   const [error, setError] = useState('')
@@ -20,18 +23,25 @@ function App() {
   const active = useMemo(() => tasks.filter(task => task.status !== 'completed'), [tasks])
   const completed = useMemo(() => tasks.filter(task => task.status === 'completed'), [tasks])
 
-  const login = event => { event.preventDefault(); const name = loginName.trim(); if (!name) return; localStorage.setItem('task-user', name); setUserName(name) }
-  const logout = () => { localStorage.removeItem('task-user'); setUserName(''); setLoginName('') }
+  const login = async event => {
+    event.preventDefault()
+    try {
+      const result = await api(`/auth/${registering ? 'register' : 'login'}`, { method: 'POST', body: JSON.stringify({ userName: loginName, password }) })
+      localStorage.setItem('task-token', result.token); localStorage.setItem('task-user', result.userName)
+      setUserName(result.userName); setError('')
+    } catch (e) { setError(e.message || 'Login failed.') }
+  }
+  const logout = async () => { try { await api('/auth/logout', { method: 'POST' }) } catch {} localStorage.removeItem('task-token'); localStorage.removeItem('task-user'); setUserName(''); setLoginName(''); setPassword('') }
   const addTask = async event => {
     event.preventDefault()
     try {
-      await api('/tasks', { method: 'POST', body: JSON.stringify({ ...form, dueDate: form.dueDate || null, userName }) })
+      await api('/tasks', { method: 'POST', body: JSON.stringify({ ...form, dueDate: form.dueDate || null }) })
       setForm({ title: '', description: '', dueDate: '' }); await loadTasks()
     } catch (e) { setError(e.message) }
   }
-  const act = async (task, action) => { try { await api(`/tasks/${task.id}/${action}`, { method: 'POST', body: JSON.stringify({ userName }) }); await loadTasks() } catch (e) { setError(e.message) } }
+  const act = async (task, action) => { try { await api(`/tasks/${task.id}/${action}`, { method: 'POST' }); await loadTasks() } catch (e) { setError(e.message) } }
 
-  if (!userName) return <main className="login-page"><form className="login-card" onSubmit={login}><div className="logo">✓</div><h1>Team Task Manager</h1><p>Enter your name to join your team workspace.</p><input autoFocus value={loginName} onChange={e => setLoginName(e.target.value)} placeholder="Your name" /><button>Continue</button></form></main>
+  if (!userName) return <main className="login-page"><form className="login-card" onSubmit={login}><div className="logo">✓</div><h1>Team Task Manager</h1><p>{registering ? 'Create an account for your team workspace.' : 'Sign in to your team workspace.'}</p>{error && <div className="error">{error}</div>}<input autoFocus required minLength="3" value={loginName} onChange={e => setLoginName(e.target.value)} placeholder="Username" /><input required minLength="8" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" /><button>{registering ? 'Create account' : 'Sign in'}</button><button type="button" className="switch-auth" onClick={() => { setRegistering(!registering); setError('') }}>{registering ? 'Already registered? Sign in' : 'New user? Create account'}</button></form></main>
 
   return <main className="app-shell">
     <header><div><span className="eyebrow">TEAM WORKSPACE</span><h1>Good work starts here.</h1><p>Plan, claim, and complete tasks together.</p></div><div className="user"><span>{userName.charAt(0).toUpperCase()}</span><div><b>{userName}</b><button onClick={logout}>Sign out</button></div></div></header>
