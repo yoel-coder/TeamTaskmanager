@@ -31,10 +31,10 @@ if errorlevel 1 (
 popd
 
 echo Starting the C# backend...
-start "Team Task Manager API" cmd /k "cd /d "%~dp0backend" && dotnet run"
+start "Team Task Manager API" /D "%~dp0backend" cmd /k dotnet run
 
 echo Starting the React JSX frontend...
-start "Team Task Manager React" cmd /k "cd /d "%~dp0frontend" && npm run dev"
+start "Team Task Manager React" /D "%~dp0frontend" cmd /k npm run dev
 
 echo Waiting for the app to start...
 timeout /t 7 /nobreak >nul
