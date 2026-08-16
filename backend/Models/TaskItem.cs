@@ -18,3 +18,19 @@ public sealed class TaskItem
 public sealed record CreateTaskRequest(string Title, string? Description, DateOnly? DueDate);
 public sealed record CredentialsRequest(string UserName, string Password);
 public sealed record AuthResponse(string Token, string UserName);
+
+public sealed class UserAccount
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string UserName { get; set; } = string.Empty;
+    public byte[] PasswordHash { get; set; } = [];
+    public byte[] PasswordSalt { get; set; } = [];
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class UserSession
+{
+    public string Token { get; set; } = string.Empty;
+    public string UserName { get; set; } = string.Empty;
+    public DateTime ExpiresAt { get; set; }
+}
