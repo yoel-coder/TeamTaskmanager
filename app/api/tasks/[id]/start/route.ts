@@ -1,3 +1,0 @@
-import{ensureTasksTable,getD1}from"../../../../../lib/tasks-db";
-import{getChatGPTUser}from"../../../../chatgpt-auth";
-export async function POST(_request:Request,context:{params:Promise<{id:string}>}){const user=await getChatGPTUser();if(!user)return Response.json({error:"Please log in to claim tasks."},{status:401});await ensureTasksTable();const db=await getD1();const{id}=await context.params;const result=await db.prepare("UPDATE tasks SET status='InProgress',assigned_to=?,started_at=? WHERE id=? AND status='Open'").bind(user.displayName.slice(0,100),new Date().toISOString(),Number(id)).run();if(!result.meta.changes)return Response.json({error:"Another teammate already claimed this task."},{status:409});return Response.json({ok:true})}
