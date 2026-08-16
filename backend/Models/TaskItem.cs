@@ -15,5 +15,6 @@ public sealed class TaskItem
     public DateTime? CompletedAt { get; set; }
 }
 
-public sealed record CreateTaskRequest(string Title, string? Description, DateOnly? DueDate, string UserName);
-public sealed record UserActionRequest(string UserName);
+public sealed record CreateTaskRequest(string Title, string? Description, DateOnly? DueDate);
+public sealed record CredentialsRequest(string UserName, string Password);
+public sealed record AuthResponse(string Token, string UserName);
