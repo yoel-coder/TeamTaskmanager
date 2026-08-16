@@ -2,6 +2,10 @@
 
 A shared team task manager with an ASP.NET Core backend and a React frontend written in plain JavaScript.
 
+## One-click Windows start
+
+Download and extract the repository, then double-click `run-windows.bat`. It installs the frontend packages, starts the C# API and React JSX frontend, and opens the app in your browser.
+
 ## Technology
 
 - Backend: C#, ASP.NET Core 8 Minimal API
