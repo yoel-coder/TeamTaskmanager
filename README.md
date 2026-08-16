@@ -10,7 +10,7 @@ Download and extract the repository, then double-click `run-windows.bat`. It ins
 
 - Backend: C#, ASP.NET Core 8 Minimal API
 - Frontend: React, JavaScript, Vite
-- Database: Microsoft SQL Server / SQL Server LocalDB
+- Database: Microsoft SQL Server / SQL Server LocalDB through Entity Framework Core
 - No TypeScript
 
 ## Run the backend
@@ -38,7 +38,7 @@ Open `http://localhost:5173`.
 
 ## Database
 
-The backend uses SQL Server LocalDB and automatically creates the `TeamTaskManager` database and `dbo.Tasks` table when it starts. The complete SQL setup script is available at `database/schema.sql` for running manually in SQL Server Management Studio.
+The backend uses EF Core repositories with SQL Server LocalDB. EF Core automatically creates the `TeamTaskManager` database and its Users, Sessions, and Tasks tables when the API starts. You do not need to run SQL queries manually. The SQL file is retained only as an optional schema reference.
 
 ## Features
 
